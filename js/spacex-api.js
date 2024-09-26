@@ -1,26 +1,28 @@
-// Fichier : spacex-api.js
+// Fonction pour récupérer la liste des fusées depuis l'API SpaceX
+async function fetchRockets() {
+    const response = await fetch('https://api.spacexdata.com/v4/rockets');
+    const rockets = await response.json();
 
-// Fonction pour récupérer les prochains lancements depuis l'API SpaceX
-async function fetchUpcomingLaunches() {
-    const response = await fetch('https://api.spacexdata.com/v4/launches/upcoming');
-    const launches = await response.json();
+    const rocketList = document.getElementById('rocket-list');
+    rocketList.innerHTML = ""; // On vide la liste avant d'ajouter les nouvelles données
 
-    const launchList = document.getElementById('launch-list');
-    launchList.innerHTML = ""; // On vide la liste avant d'ajouter les nouvelles données
-
-    // Itération sur les lancements à venir pour créer des éléments HTML
-    launches.forEach(launch => {
-        const launchElement = document.createElement('div');
-        launchElement.className = 'launch-item';
-        launchElement.innerHTML = `
-            <h3>${launch.name}</h3>
-            <p>Date de lancement : ${new Date(launch.date_utc).toLocaleString()}</p>
-            <p>Lieu : ${launch.launchpad}</p>
-            <p>Fusée : ${launch.rocket}</p>
+    rockets.forEach(rocket => {
+        const rocketElement = document.createElement('div');
+        rocketElement.className = 'rocket-item';
+        rocketElement.innerHTML = `
+            <h3>${rocket.name}</h3>
+            <p>Hauteur : ${rocket.height.meters} mètres</p>
+            <p>Diamètre : ${rocket.diameter.meters} mètres</p>
+            <p>Poussée : ${rocket.first_stage.thrust_sea_level.kN} kN</p>
+            <p>Description : ${rocket.description}</p>
         `;
-        launchList.appendChild(launchElement);
+        rocketList.appendChild(rocketElement);
     });
 }
 
-// Appel de la fonction au chargement de la page
-document.addEventListener('DOMContentLoaded', fetchUpcomingLaunches);
+// Appel de la fonction au chargement de la page des fusées
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('rocket-list')) {
+        fetchRockets();
+    }
+});
